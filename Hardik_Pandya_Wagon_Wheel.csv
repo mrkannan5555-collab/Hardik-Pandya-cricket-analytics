@@ -1,0 +1,9 @@
+﻿Zone,Display_Name,Angle_Center,Runs,Balls,Fours,Sixes,Pct_Runs,Strike_Rate,Description
+Zone_1,Fine Leg,45,486,310,32,14,7.5,156.77,Flick, ramp shots, and fine sweeps
+Zone_2,Deep Square Leg,90,984,625,68,48,15.2,157.44,Aggressive pull shots and hook strokes against bouncers
+Zone_3,Deep Mid-Wicket,135,1648,936,98,92,25.5,176.07,Signature power-pull and leg-side helicopter swat
+Zone_4,Long On,170,1420,812,74,86,22.0,174.88,Lofted straight power drives and arc maximums
+Zone_5,Long Off,195,842,560,54,42,13.0,150.36,Inside-out lofts over covers and straight drives
+Zone_6,Deep Extra Cover,235,468,342,38,18,7.2,136.84,Lofted punch and cover drives against full deliveries
+Zone_7,Point / Backward Point,275,324,248,34,8,5.0,130.65,Deliberate square cuts and late steering dabs
+Zone_8,Third Man,315,295,225,25,6,4.6,131.11,Upper cuts, late dabs, and edges behind point

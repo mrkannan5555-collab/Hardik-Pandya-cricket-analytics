@@ -1,0 +1,5 @@
+﻿Format,Matches,Innings_Batted,Runs,Balls_Faced,Highest_Score,Batting_Average,Batting_Strike_Rate,Not_Outs,Centuries,Half_Centuries,Fours,Sixes,Overs_Bowled,Maidens,Runs_Conceded,Wickets,Bowling_Average,Bowling_Economy,Bowling_Strike_Rate,Best_Bowling_Innings,Three_Wickets,Four_Wickets,Five_Wickets,Catches
+Test,11,18,532,720,108,31.29,73.89,1,1,4,68,12,163.3,18,552,17,31.05,3.38,55.1,5/28,1,0,1,7
+ODI,86,61,1769,1603,92,34.01,110.35,9,0,11,138,68,574.5,13,3194,84,38.02,5.56,41.0,4/24,6,1,0,33
+T20I,104,77,1641,1165,71,27.35,140.86,17,0,5,124,84,302.2,2,2468,86,28.69,8.16,21.0,4/16,4,1,0,52
+IPL,137,126,2525,1731,91,28.69,145.86,38,0,10,195,134,295.4,3,2615,64,40.85,8.84,27.7,3/17,3,0,0,65

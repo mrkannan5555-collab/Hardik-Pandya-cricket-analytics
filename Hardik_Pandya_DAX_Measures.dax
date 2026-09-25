@@ -1,0 +1,379 @@
+/* =========================================================================================
+   HARDIK PANDYA CAREER PERFORMANCE ANALYTICS — PRODUCTION DAX MEASURES LIBRARY
+   Designed for Dark Sports Theme Power BI Dashboard (ESPN Cricinfo / ICC Analytics Style)
+   Data Model Table: Fact_Matches (Match-by-Match granularity)
+   ========================================================================================= */
+
+// ==========================================
+// 1. CORE CAREER VOLUME MEASURES
+// ==========================================
+
+[Total Matches] = 
+COUNTROWS('Fact_Matches')
+
+[Innings Batted] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Batting_Innings] = 1
+)
+
+[Innings Bowled] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Overs] > 0
+)
+
+[Total Runs] = 
+SUM('Fact_Matches'[Runs])
+
+[Total Balls Faced] = 
+SUM('Fact_Matches'[Balls])
+
+[Total Fours] = 
+SUM('Fact_Matches'[Fours])
+
+[Total Sixes] = 
+SUM('Fact_Matches'[Sixes])
+
+[Total Boundaries] = 
+[Total Fours] + [Total Sixes]
+
+[Total Boundary Runs] = 
+([Total Fours] * 4) + ([Total Sixes] * 6)
+
+[Total Overs Bowled] = 
+SUM('Fact_Matches'[Overs])
+
+[Total Maidens] = 
+SUM('Fact_Matches'[Maidens])
+
+[Total Runs Conceded] = 
+SUM('Fact_Matches'[Runs_Conceded])
+
+[Total Wickets] = 
+SUM('Fact_Matches'[Wickets])
+
+[Total Catches] = 
+SUM('Fact_Matches'[Catches])
+
+[Dismissals Count] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Batting_Innings] = 1,
+    'Fact_Matches'[Dismissal_Mode] <> "not out",
+    'Fact_Matches'[Dismissal_Mode] <> "dnb",
+    'Fact_Matches'[Dismissal_Mode] <> "retired hurt"
+)
+
+[Not Outs Count] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Batting_Innings] = 1,
+    'Fact_Matches'[Dismissal_Mode] = "not out"
+)
+
+
+// ==========================================
+// 2. CORE RATE & EFFICIENCY METRICS
+// ==========================================
+
+[Batting Average] = 
+VAR _Dismissals = [Dismissals Count]
+VAR _Runs = [Total Runs]
+RETURN
+IF(
+    _Dismissals = 0,
+    BLANK(),
+    ROUND(DIVIDE(_Runs, _Dismissals), 2)
+)
+
+[Batting Strike Rate] = 
+VAR _Balls = [Total Balls Faced]
+VAR _Runs = [Total Runs]
+RETURN
+IF(
+    _Balls = 0,
+    0.0,
+    ROUND(DIVIDE(_Runs, _Balls) * 100, 2)
+)
+
+[Bowling Economy Rate] = 
+VAR _Overs = [Total Overs Bowled]
+VAR _RunsConceded = [Total Runs Conceded]
+RETURN
+IF(
+    _Overs = 0,
+    BLANK(),
+    ROUND(DIVIDE(_RunsConceded, _Overs), 2)
+)
+
+[Bowling Average] = 
+VAR _Wickets = [Total Wickets]
+VAR _RunsConceded = [Total Runs Conceded]
+RETURN
+IF(
+    _Wickets = 0,
+    BLANK(),
+    ROUND(DIVIDE(_RunsConceded, _Wickets), 2)
+)
+
+[Bowling Strike Rate] = 
+VAR _Wickets = [Total Wickets]
+VAR _Overs = [Total Overs Bowled]
+VAR _BallsBowled = _Overs * 6
+RETURN
+IF(
+    _Wickets = 0,
+    BLANK(),
+    ROUND(DIVIDE(_BallsBowled, _Wickets), 1)
+)
+
+[Boundary Run Percentage] = 
+VAR _BoundaryRuns = [Total Boundary Runs]
+VAR _TotalRuns = [Total Runs]
+RETURN
+IF(
+    _TotalRuns = 0,
+    0.0,
+    ROUND(DIVIDE(_BoundaryRuns, _TotalRuns) * 100, 1)
+)
+
+[Balls Per Boundary] = 
+VAR _Balls = [Total Balls Faced]
+VAR _Boundaries = [Total Boundaries]
+RETURN
+IF(
+    _Boundaries = 0,
+    BLANK(),
+    ROUND(DIVIDE(_Balls, _Boundaries), 1)
+)
+
+[Balls Per Six] = 
+VAR _Balls = [Total Balls Faced]
+VAR _Sixes = [Total Sixes]
+RETURN
+IF(
+    _Sixes = 0,
+    BLANK(),
+    ROUND(DIVIDE(_Balls, _Sixes), 1)
+)
+
+
+// ==========================================
+// 3. MILESTONES & CLUTCH RECORDS
+// ==========================================
+
+[Centuries (100s)] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Runs] >= 100
+)
+
+[Half Centuries (50s)] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Runs] >= 50,
+    'Fact_Matches'[Runs] < 100
+)
+
+[30+ Impact Knocks] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Runs] >= 30
+)
+
+[3+ Wickets Innings] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Wickets] >= 3
+)
+
+[4+ Wickets Innings] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Wickets] >= 4
+)
+
+[5-Wicket Hauls (5W)] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Wickets] >= 5
+)
+
+[Player of the Match Awards] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Player_of_Match] = "Yes"
+)
+
+[Highest Score] = 
+MAX('Fact_Matches'[Runs])
+
+[Best Bowling Figures] = 
+VAR _MaxWkts = CALCULATE(MAX('Fact_Matches'[Wickets]), ALLSELECTED('Fact_Matches'))
+VAR _MinRunsAtMaxWkts = 
+    CALCULATE(
+        MIN('Fact_Matches'[Runs_Conceded]),
+        'Fact_Matches'[Wickets] = _MaxWkts,
+        ALLSELECTED('Fact_Matches')
+    )
+RETURN
+IF(
+    ISBLANK(_MaxWkts) || _MaxWkts = 0,
+    "-",
+    FORMAT(_MaxWkts, "0") & "/" & FORMAT(_MinRunsAtMaxWkts, "0")
+)
+
+
+// ==========================================
+// 4. MATCH OUTCOME & WIN CONTRIBUTION
+// ==========================================
+
+[Matches Won] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Result] = "Won"
+)
+
+[Win Rate %] = 
+VAR _Total = [Total Matches]
+VAR _Won = [Matches Won]
+RETURN
+IF(
+    _Total = 0,
+    0.0,
+    ROUND(DIVIDE(_Won, _Total) * 100, 1)
+)
+
+[Batting Avg in Wins] = 
+CALCULATE(
+    [Batting Average],
+    'Fact_Matches'[Result] = "Won"
+)
+
+[Batting Strike Rate in Wins] = 
+CALCULATE(
+    [Batting Strike Rate],
+    'Fact_Matches'[Result] = "Won"
+)
+
+[Bowling Economy in Wins] = 
+CALCULATE(
+    [Bowling Economy Rate],
+    'Fact_Matches'[Result] = "Won"
+)
+
+
+// ==========================================
+// 5. ALL-ROUNDER IMPACT & KPI SCORE
+// ==========================================
+
+[Match Impact Index Avg] = 
+ROUND(AVERAGE('Fact_Matches'[Match_Impact_Score]), 1)
+
+[Elite All-Round Double Matches (30+ Runs & 2+ Wkts)] = 
+CALCULATE(
+    COUNTROWS('Fact_Matches'),
+    'Fact_Matches'[Runs] >= 30,
+    'Fact_Matches'[Wickets] >= 2
+)
+
+
+// ==========================================
+// 6. DYNAMIC TITLES & SLICER FEEDBACK
+// ==========================================
+
+[Dynamic Header Title] = 
+VAR _SelectedFormat = SELECTEDVALUE('Fact_Matches'[Format], "All Formats")
+VAR _SelectedTeam = SELECTEDVALUE('Fact_Matches'[Team], "All Teams")
+VAR _MinYear = MIN('Fact_Matches'[Year])
+VAR _MaxYear = MAX('Fact_Matches'[Year])
+RETURN
+"HARDIK PANDYA • " & UPPER(_SelectedFormat) & " CAREER PERFORMANCE (" & _MinYear & " - " & _MaxYear & ")"
+
+[Dynamic Slicer Subtitle] = 
+VAR _Format = SELECTEDVALUE('Fact_Matches'[Format], "All Formats")
+VAR _Team = SELECTEDVALUE('Fact_Matches'[Team], "All Teams")
+VAR _Opponent = SELECTEDVALUE('Fact_Matches'[Opponent], "All Opponents")
+RETURN
+"Filtered by: " & _Format & " | Team: " & _Team & " | Opponent: " & _Opponent
+
+[Dynamic Runs Visual Title] = 
+VAR _Format = SELECTEDVALUE('Fact_Matches'[Format], "Career")
+RETURN
+"Annual Batting Run Trajectory (" & _Format & ")"
+
+[Dynamic Wickets Visual Title] = 
+VAR _Format = SELECTEDVALUE('Fact_Matches'[Format], "Career")
+RETURN
+"Annual Wicket Tally & Bowling Evolution (" & _Format & ")"
+
+
+// ==========================================
+// 7. TIME INTELLIGENCE & ROLLING AVERAGES
+// ==========================================
+
+[Cumulative Career Runs] = 
+VAR _CurrentDate = MAX('Fact_Matches'[Match_Date])
+RETURN
+CALCULATE(
+    [Total Runs],
+    FILTER(
+        ALLSELECTED('Fact_Matches'),
+        'Fact_Matches'[Match_Date] <= _CurrentDate
+    )
+)
+
+[Cumulative Career Wickets] = 
+VAR _CurrentDate = MAX('Fact_Matches'[Match_Date])
+RETURN
+CALCULATE(
+    [Total Wickets],
+    FILTER(
+        ALLSELECTED('Fact_Matches'),
+        'Fact_Matches'[Match_Date] <= _CurrentDate
+    )
+)
+
+
+// ==========================================
+// 8. ADVANCED PHASE & MATCHUP ANALYTICS
+// ==========================================
+
+[Death Overs Strike Rate] = 
+CALCULATE(
+    MAX('Hardik_Pandya_Phase_Analysis'[Batting_Strike_Rate]),
+    'Hardik_Pandya_Phase_Analysis'[Phase] = "Death Overs"
+)
+
+[Death Overs Boundary %] = 
+CALCULATE(
+    MAX('Hardik_Pandya_Phase_Analysis'[Batting_Boundary_Pct]),
+    'Hardik_Pandya_Phase_Analysis'[Phase] = "Death Overs"
+)
+
+[Death Overs Bowling Economy] = 
+CALCULATE(
+    MAX('Hardik_Pandya_Phase_Analysis'[Bowling_Economy]),
+    'Hardik_Pandya_Phase_Analysis'[Phase] = "Death Overs"
+)
+
+[Middle Overs Wickets] = 
+CALCULATE(
+    SUM('Hardik_Pandya_Phase_Analysis'[Bowling_Wickets]),
+    'Hardik_Pandya_Phase_Analysis'[Phase] = "Middle Overs"
+)
+
+[Leg-Side Power Arc Runs %] = 
+VAR _MidWicket = CALCULATE(SUM('Hardik_Pandya_Wagon_Wheel'[Runs]), 'Hardik_Pandya_Wagon_Wheel'[Display_Name] = "Deep Mid-Wicket")
+VAR _LongOn = CALCULATE(SUM('Hardik_Pandya_Wagon_Wheel'[Runs]), 'Hardik_Pandya_Wagon_Wheel'[Display_Name] = "Long On")
+VAR _Total = SUM('Hardik_Pandya_Wagon_Wheel'[Runs])
+RETURN
+ROUND(DIVIDE(_MidWicket + _LongOn, _Total) * 100, 1)
+
+[Elite Bowler Dominance Index] = 
+VAR _TotalRunsVsElite = SUM('Hardik_Pandya_Bowler_Matchups'[Runs_Scored])
+VAR _TotalBallsVsElite = SUM('Hardik_Pandya_Bowler_Matchups'[Balls_Faced])
+RETURN
+IF(_TotalBallsVsElite = 0, 0, ROUND(DIVIDE(_TotalRunsVsElite, _TotalBallsVsElite) * 100, 2))
+

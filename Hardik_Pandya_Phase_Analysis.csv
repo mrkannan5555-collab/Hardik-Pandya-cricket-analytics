@@ -1,0 +1,4 @@
+﻿Phase,Overs_Range,Batting_Runs,Batting_Balls,Batting_Strike_Rate,Batting_Boundary_Pct,Batting_Dot_Ball_Pct,Batting_Sixes,Batting_Fours,Bowling_Overs,Bowling_Wickets,Bowling_Economy,Bowling_Dot_Ball_Pct,Bowling_Strike_Rate
+Powerplay,Overs 1 - 6,420,336,125.00,52.4,44.2,18,38,348.0,48,7.12,51.8,43.5
+Middle Overs,Overs 7 - 15,2865,2238,128.02,56.8,38.5,124,198,624.4,124,7.45,46.2,30.2
+Death Overs,Overs 16 - 20,3182,1684,188.95,78.2,26.4,204,187,362.2,79,8.96,36.5,27.5
